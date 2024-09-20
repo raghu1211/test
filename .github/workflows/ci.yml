@@ -11,15 +11,12 @@ on:
 env:
   BUILD_DIR: build
   TEST_RESULTS: test-results.txt
-  RELEASE_NAME: "v${{ github.ref_name }}"
+  # RELEASE_NAME: "v${{ github.ref_name }}"
 
 jobs:
   build:
+    name: Build Job
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [18]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,25 +24,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
 
-      - name: Create package.json if it doesn't exist
-        run: |
-          if [ ! -f /home/craghu/Desktop/github/actions-runner/runner/test/package.json ]; then
-            echo '{}' > /home/craghu/Desktop/github/actions-runner/runner/test/package.json
-          fi
-        working-directory: /home/craghu/Desktop/github/actions-runner/runner/test
-
-      - name: Debug package.json and package-lock.json presence
-        run: |
-          ls -al /home/craghu/Desktop/github/actions-runner/runner/test
-          cat /home/craghu/Desktop/github/actions-runner/runner/test/package.json
-          # cat /home/craghu/Desktop/github/actions-runner/runner/test/package-lock.json
-        working-directory: /home/craghu/Desktop/github/actions-runner/runner/test
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
-        working-directory: /home/craghu/Desktop/github/actions-runner/runner/test
+        working-directory: /home/craghu/Desktop/github/test
 
       - name: Build the project
         run: |
