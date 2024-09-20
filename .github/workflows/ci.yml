@@ -31,21 +31,21 @@ jobs:
 
       - name: Create package.json if it doesn't exist
         run: |
-          if [ ! -f /home/craghu/Desktop/github/test/package.json ]; then
-            echo '{}' > /home/craghu/Desktop/github/test/package.json
+          if [ ! -f /home/craghu/Desktop/github/actions-runner/runner/test/package.json ]; then
+            echo '{}' > /home/craghu/Desktop/github/actions-runner/runner/test/package.json
           fi
-        working-directory: /home/craghu/Desktop/github/test
+        working-directory: /home/craghu/Desktop/github/actions-runner/runner/test
 
       - name: Debug package.json and package-lock.json presence
         run: |
-          ls -al /home/craghu/Desktop/github/test
-          cat /home/craghu/Desktop/github/test/package.json
-          # cat /home/craghu/Desktop/github/test/package-lock.json
-        working-directory: /home/craghu/Desktop/github/test
+          ls -al /home/craghu/Desktop/github/actions-runner/runner/test
+          cat /home/craghu/Desktop/github/actions-runner/runner/test/package.json
+          # cat /home/craghu/Desktop/github/actions-runner/runner/test/package-lock.json
+        working-directory: /home/craghu/Desktop/github/actions-runner/runner/test
 
       - name: Install dependencies
         run: npm install
-        working-directory: /home/craghu/Desktop/github/test
+        working-directory: /home/craghu/Desktop/github/actions-runner/runner/test
 
       - name: Build the project
         run: |
