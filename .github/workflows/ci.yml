@@ -1,0 +1,114 @@
+name: CI test
+
+on:
+  push:
+    branches:
+      - '**'
+  release:
+    types:
+      - created
+
+env:
+  BUILD_DIR: build
+  TEST_RESULTS: test-results.txt
+  RELEASE_NAME: "v${{ github.ref_name }}"
+
+jobs:
+  build:
+    name: Build Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js 
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: |
+          echo "Building the project..."
+          mkdir -p $BUILD_DIR
+          npm run build
+
+      - name: Store build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: $BUILD_DIR
+
+  test:
+    name: Test Job
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: Run unit tests
+        run: |
+          echo "Running tests..."
+          npm test > $TEST_RESULTS
+          echo "Tests completed."
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: $TEST_RESULTS
+
+  deploy:
+    name: Deploy Job
+    runs-on: ubuntu-latest
+    needs: test
+    if: ${{ github.ref == 'refs/heads/main' }}  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: Deploy to server
+        run: |
+          echo "Deploying to production..."
+          scp -r $BUILD_DIR/* user@server:/var/www/app
+
+  release:
+    name: Release Job
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up GitHub CLI
+        run: |
+          echo "Setting up GitHub CLI..."
+          sudo apt-get install gh
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Creating a GitHub release..."
+          gh release create $RELEASE_NAME --title "Release $RELEASE_NAME" --notes "Automatically created release."
