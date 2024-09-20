@@ -15,27 +15,37 @@ env:
 
 jobs:
   build:
-    name: Build Job
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [18]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js 
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      - name: Create package.json if it doesn't exist
+        run: |
+          if [ ! -f /home/craghu/Desktop/github/test/package.json ]; then
+            echo '{}' > /home/craghu/Desktop/github/test/package.json
+          fi
+        working-directory: /home/craghu/Desktop/github/test
+
+      - name: Debug package.json and package-lock.json presence
+        run: |
+          ls -al /home/craghu/Desktop/github/test
+          cat /home/craghu/Desktop/github/test/package.json
+          # cat /home/craghu/Desktop/github/test/package-lock.json
+        working-directory: /home/craghu/Desktop/github/test
 
       - name: Install dependencies
         run: npm install
+        working-directory: /home/craghu/Desktop/github/test
 
       - name: Build the project
         run: |
@@ -51,7 +61,7 @@ jobs:
 
   test:
     name: Test Job
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     steps:
       - name: Checkout repository
@@ -74,41 +84,41 @@ jobs:
           name: test-results
           path: $TEST_RESULTS
 
-  deploy:
-    name: Deploy Job
-    runs-on: ubuntu-latest
-    needs: test
-    if: ${{ github.ref == 'refs/heads/main' }}  
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # deploy:
+  #   name: Deploy Job
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   if: ${{ github.ref == 'refs/heads/main' }}  
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: build-artifacts
 
-      - name: Deploy to server
-        run: |
-          echo "Deploying to production..."
-          scp -r $BUILD_DIR/* user@server:/var/www/app
+  #     - name: Deploy to server
+  #       run: |
+  #         echo "Deploying to production..."
+  #         scp -r $BUILD_DIR/* user@server:/var/www/app
 
-  release:
-    name: Release Job
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # release:
+  #   name: Release Job
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event_name == 'release' }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Set up GitHub CLI
-        run: |
-          echo "Setting up GitHub CLI..."
-          sudo apt-get install gh
+  #     - name: Set up GitHub CLI
+  #       run: |
+  #         echo "Setting up GitHub CLI..."
+  #         sudo apt-get install gh
 
-      - name: Create GitHub release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Creating a GitHub release..."
-          gh release create $RELEASE_NAME --title "Release $RELEASE_NAME" --notes "Automatically created release."
+  #     - name: Create GitHub release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         echo "Creating a GitHub release..."
+  #         gh release create $RELEASE_NAME --title "Release $RELEASE_NAME" --notes "Automatically created release."
