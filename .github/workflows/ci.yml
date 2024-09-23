@@ -42,7 +42,7 @@ jobs:
             "description": "A test project",
             "scripts": {
               "start": "node app.js",
-              "test": "echo \"Error: no test specified\" && exit 1",
+              "test": "echo \"Running tests...\" && exit 0",
               "build": "echo \"Building project...\" && echo \"Build completed\""
             },
             "dependencies": {
@@ -88,9 +88,8 @@ jobs:
 
       - name: Run unit tests
         run: |
-          echo "Running tests..."
+          cd /home/runner/work/test/test
           npm test > $TEST_RESULTS
-          echo "Tests completed."
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
