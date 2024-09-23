@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: $TEST_RESULTS
+          path: /home/runner/work/test/test
 
   # deploy:
   #   name: Deploy Job
