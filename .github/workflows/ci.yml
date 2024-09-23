@@ -36,7 +36,6 @@ jobs:
 
       - name: Add packgae.json
         run: |
-          mkdir cd /home/runner/work/test/test
           cd /home/runner/work/test/test
           touch package.json
 
