@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - '**'
-  release:
-    types:
-      - created
+  # release:
+  #   types:
+  #     - created
 
 env:
   BUILD_DIR: build
@@ -33,6 +33,9 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      - name: Set working directory
+        run: cd ./test
 
       - name: Install dependencies
         run: npm install
