@@ -9,9 +9,7 @@ on:
   #     - created
 
 env:
-  BUILD_DIR: build
   TEST_RESULTS: test-results.txt
-  # RELEASE_NAME: "v${{ github.ref_name }}"
 
 jobs:
   build:
@@ -63,17 +61,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the project
-        run: |
-          echo "Building the project..."
-          mkdir -p $BUILD_DIR
-          npm run build
+      # - name: Build the project
+      #   run: |
+      #     echo "Building the project..."
+      #     mkdir -p $BUILD_DIR
+      #     npm run build
 
-      - name: Store build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: $BUILD_DIR
+      # - name: Store build artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build-artifacts
+      #     path: $BUILD_DIR
 
   test:
     name: Test Job
