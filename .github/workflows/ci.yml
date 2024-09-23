@@ -34,8 +34,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Set working directory
-        run: cd /home/test
+      - name: Add packgae.json
+        run: |
+          mkdir cd /home/runner/work/test/test
+          cd /home/runner/work/test/test
+          touch package.json
 
       - name: Install dependencies
         run: npm install
