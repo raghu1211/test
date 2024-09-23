@@ -34,10 +34,42 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Add packgae.json
+      - name: Add package.json
         run: |
           cd /home/runner/work/test/test
           touch package.json
+          jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create and add content to package.json
+        run: |
+          cd /home/runner/work/test/test
+          touch package.json
+          echo '{
+            "name": "test-project",
+            "version": "1.0.0",
+            "description": "A test project",
+            "scripts": {
+              "start": "node app.js",
+              "test": "echo \"Error: no test specified\" && exit 1"
+            },
+            "dependencies": {
+              "express": "^4.17.1"
+            }
+          }' > package.json
+
+      - name: Display package.json (for debugging purposes)
+        run: |
+          cat /home/runner/work/test/test/package.json
+
+      - name: Install dependencies
+        run: |
+          cd /home/runner/work/test/test
+          npm install
 
       - name: Install dependencies
         run: npm install
