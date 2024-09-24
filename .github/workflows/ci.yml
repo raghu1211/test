@@ -28,6 +28,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Authenticate to GitHub Packages
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GHCR_PAT }}" > ~/.npmrc
+        env:
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -68,6 +73,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Update package version
+        run: npm version patch 
 
       - name: Build the project
         run: |
