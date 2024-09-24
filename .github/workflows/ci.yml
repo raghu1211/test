@@ -71,6 +71,11 @@ jobs:
           cd /home/runner/work/test/test
           npm install
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "raghavenderraoch89@gmail.com"
+          git config --global user.name "raghu1211"
+
       - name: Install dependencies
         run: npm install
 
