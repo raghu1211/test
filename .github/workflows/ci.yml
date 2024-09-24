@@ -11,6 +11,10 @@ on:
 env:
   TEST_RESULTS: test-results.txt
 
+permissions:
+      packages: write
+      contents: read
+
 jobs:
   build:
     name: Build Job
