@@ -37,23 +37,23 @@ jobs:
           cd /home/runner/work/test/test
           touch package.json
           echo '{
-            "name": "test-project",
+            "name": "@raghu1211/test-project",
             "version": "1.0.0",
-            "publishConfig": {
-              "registry": "https://npm.pkg.github.com/"
-            },
             "description": "A test project",
             "scripts": {
               "start": "node app.js",
               "test": "echo \"Running tests...\" && exit 0",
               "build": "echo \"Building project...\" && echo \"Build completed\""
             },
+            "publishConfig": {
+              "registry": "https://npm.pkg.github.com/"
+            },
             "dependencies": {
               "express": "^4.17.1"
             }
           }' > package.json
 
-      - name: Display package.json (for debugging purposes)
+      - name: Display package.json
         run: |
           cat /home/runner/work/test/test/package.json
 
