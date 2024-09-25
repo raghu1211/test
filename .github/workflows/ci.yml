@@ -103,7 +103,6 @@ jobs:
           name: build-artifacts
           path: /home/runner/work/test/test
 
-
   test:
     name: Test Job
     runs-on: ubuntu-latest
@@ -158,6 +157,9 @@ jobs:
 
       - name: Stash uncommitted changes
         run: git stash || echo "No changes to stash"
+
+      - name: Pull latest changes
+        run: git pull origin master
 
       - name: Check for changes before pushing
         run: |
