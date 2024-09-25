@@ -191,7 +191,7 @@ jobs:
       - name: Publish package to GitHub Packages
         run: |
           cd /home/runner/work/test/test
-          npm publish --access public
+          npm publish --access public || (echo "Publishing failed; attempting to overwrite." && npm publish --access public --force)
 
   deploy:
     name: Deploy Job
