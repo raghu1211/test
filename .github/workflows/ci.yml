@@ -135,6 +135,11 @@ jobs:
         env:
           GHCR_PAT: ${{ secrets.GHCR_PAT }}
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "raghavenderraoch89@gmail.com"
+          git config --global user.name "raghu1211"
+
       - name: Bump package version
         run: |
           cd /home/runner/work/test/test
