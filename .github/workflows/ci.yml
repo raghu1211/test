@@ -137,11 +137,11 @@ jobs:
         env:
           GHCR_PAT: ${{ secrets.GHCR_PAT }}
 
-      # - name: confighur git
-      #   run: |
-      #     git config --global user.email "raghavenderraoch89@gmail.com"
-      #     git config --global user.name "raghu1211"
-      #     git push origin HEAD
+      - name: confighur git
+        run: |
+          git config --global user.email "raghavenderraoch89@gmail.com"
+          git config --global user.name "raghu1211"
+          git push origin HEAD
 
       - name: Bump package version
         run: |
