@@ -150,8 +150,8 @@ jobs:
         env:
           GHCR_PAT: ${{ secrets.GHCR_PAT }}
 
-      - name: Pull latest changes
-        run: git pull origin master
+      # - name: Pull latest changes
+      #   run: git pull origin master
 
       - name: Configure Git
         run: |
