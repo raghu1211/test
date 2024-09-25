@@ -192,15 +192,32 @@ jobs:
     needs: publish
     if: ${{ github.ref == 'refs/heads/master' }}  
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: List contents of the build directory
+        run: |
+          echo "Listing contents of the build directory:"
+          ls -la /home/runner/work/test/test
+
       - name: Create a deployment directory
-        run: mkdir -p /home/runner/work/deployment/test-deploy
+        run: mkdir -p /home/runner/work/deployment/test-project
 
       - name: Copy files to deployment directory
         run: |
           if [ -d "/home/runner/work/test/test" ]; then
-            cp -r /home/runner/work/test/test/* /home/runner/work/deployment/test-deploy/
-            echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
+            cp -r /home/runner/work/test/test/* /home/runner/work/deployment/test-project/ || echo "No files to copy."
+            echo "Deployment to /home/runner/work/deployment/test-project/ completed."
           else
-            echo "Error: Build folder '/home/runner/work/test/test' not found."
-            exit 1
+           echo "Error: Build folder '/home/runner/work/test/test' not found."
+           exit 1
           fi
+
+      - name: List deployment directory contents
+        run: ls -la /home/runner/work/deployment/test-project
+
