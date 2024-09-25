@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - '**'
-  release:
-    types:
-      - created  # Triggers the release job on release creation
 
 env:
   TEST_RESULTS: test-results.txt
@@ -42,7 +39,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
       - name: Create and add content to package.json
         run: |
           cd /home/runner/work/test/test
@@ -63,47 +59,44 @@ jobs:
               "express": "^4.17.1"
             }
           }' > package.json
-
       - name: Display package.json
         run: |
           cat /home/runner/work/test/test/package.json
-
       - name: Install dependencies
         run: |
           cd /home/runner/work/test/test
           npm install
-
       - name: Configure Git
         run: |
           git config --global user.email "raghavenderraoch89@gmail.com"
           git config --global user.name "raghu1211"
-
       - name: Add all changes to Git
         run: git add .
 
       - name: Commit changes (if any)
         run: |
           git diff-index --quiet HEAD || git commit -m "Committing untracked changes"
-
-      - name: Increment package version
+      - name: Update package version
         id: version
         run: |
-          cd /home/runner/work/test/test
           NEW_VERSION=$(npm version patch | sed 's/^v//') # Increment version and strip 'v' if present
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Using environment files instead of set-output
-          echo "New version set to: $NEW_VERSION"  # Debugging line
+          echo "New version is $NEW_VERSION"
+          echo "::set-output name=new_version::$NEW_VERSION"
+      - name: Push updated version to repository
+        run: |
+          git push origin master
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the project
         run: |
           cd /home/runner/work/test/test
           npm run build
-
       - name: Store build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: /home/runner/work/test/test
-
 
   test:
     name: Test Job
@@ -122,12 +115,11 @@ jobs:
         run: |
           cd /home/runner/work/test/test
           npm test > $TEST_RESULTS
-
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: $TEST_RESULTS  # Correcting path to point to the test results file
+          path: $TEST_RESULTS
 
   publish:
     name: Publish Job
@@ -212,40 +204,3 @@ jobs:
           fi
       - name: List deployment directory contents
         run: ls -la /home/runner/work/deployment/test-project
-
-
-
-  deploy:
-    name: Deploy Job
-    runs-on: ubuntu-latest
-    needs: publish
-    if: ${{ github.ref == 'refs/heads/master' }}  
-    steps:
-      - name: Create a deployment directory
-        run: mkdir -p /home/runner/work/deployment/test-deploy
-
-      - name: Copy files to deployment directory
-        run: |
-          if [ -d "/home/runner/work/test/test" ]; then
-            cp -r /home/runner/work/test/test/* /home/runner/work/deployment/test-deploy/
-            echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
-          else
-            echo "Error: Build folder '/home/runner/work/test/test' not found."
-            exit 1
-          fi
-
-  release:
-    name: Release Job
-    runs-on: ubuntu-latest
-    needs: publish
-    if: ${{ github.event_name == 'release' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Publish package to GitHub Packages
-        run: |
-          cd /home/runner/work/test/test
-          npm publish --access public
-        env:
-          GHCR_PAT: ${{ secrets.GHCR_PAT }}
