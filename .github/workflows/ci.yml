@@ -76,11 +76,20 @@ jobs:
           git config --global user.email "raghavenderraoch89@gmail.com"
           git config --global user.name "raghu1211"
 
-      - name: Install dependencies
-        run: npm install
+      - name: Add all changes to Git
+        run: git add .
+
+      - name: Commit changes (if any)
+        run: |
+          git diff-index --quiet HEAD || git commit -m "Committing untracked changes"
 
       - name: Update package version
-        run: npm version patch 
+        run: npm version patch
+
+      - name: Push updated version to repository
+        run: git push origin HEAD
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the project
         run: |
@@ -92,6 +101,7 @@ jobs:
         with:
           name: build-artifacts
           path: /home/runner/work/test/test
+
 
   test:
     name: Test Job
