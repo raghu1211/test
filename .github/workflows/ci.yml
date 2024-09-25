@@ -140,24 +140,20 @@ jobs:
           cd /home/runner/work/test/test
           npm publish
 
-  # deploy:
-  #   name: Deploy Job
-  #   runs-on: ubuntu-latest
-  #   needs: test
-  #   if: ${{ github.ref == 'refs/heads/main' }}  
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  deploy:
+    name: Deploy Job
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: test
+    if: ${{ github.ref == 'refs/heads/master' }}  
+    steps:
+      - name: Create a deployment directory
+        run: mkdir -p /home/runner/work/deployment/test-deploy
 
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: build-artifacts
-
-  #     - name: Deploy to server
-  #       run: |
-  #         echo "Deploying to production..."
-  #         scp -r /home/runner/work/test/test/* user@server:/var/www/app
+      - name: Copy files to deployment directory
+        run: |
+          cp -r ./dist/* /home/runner/work/deployment/test-deploy/
+          echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
 
   # release:
   #   name: Release Job
