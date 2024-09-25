@@ -183,7 +183,7 @@ jobs:
         run: |
           cd /home/runner/work/test/test
           NEW_VERSION=$(npm version patch | sed 's/^v//') # Increment version and strip 'v' if present
-          npm publish --access public --tag "v$NEW_VERSION" || (echo "Publishing failed; attempting to overwrite." && npm publish --access public --tag "v$NEW_VERSION" --force)
+          npm publish --access public --tag "release-${NEW_VERSION}" || (echo "Publishing failed; attempting to overwrite." && npm publish --access public --tag "release-${NEW_VERSION}" --force)
 
   deploy:
     name: Deploy Job
