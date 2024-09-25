@@ -160,26 +160,26 @@ jobs:
           git push origin HEAD
 
       - name: Bump package version
-      id: version
-      run: |
-        cd /home/runner/work/test/test
-        NEW_VERSION=$(npm version patch | sed 's/^v//') # Increment version and strip 'v' if present
-        echo "::set-output name=new_version::$NEW_VERSION"
+        id: version
+        run: |
+          cd /home/runner/work/test/test
+          NEW_VERSION=$(npm version patch | sed 's/^v//') # Increment version and strip 'v' if present
+          echo "::set-output name=new_version::$NEW_VERSION"
 
-    - name: Push changes
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add package.json
-        git commit -m "Bump package version to ${{ steps.version.outputs.new_version }}"
-        git push origin master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "Bump package version to ${{ steps.version.outputs.new_version }}"
+          git push origin master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Publish package to GitHub Packages
-      run: |
-        cd /home/runner/work/test/test
-        npm publish --access public
+      - name: Publish package to GitHub Packages
+        run: |
+          cd /home/runner/work/test/test
+          npm publish --access public
 
   deploy:
     name: Deploy Job
