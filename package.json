@@ -1,6 +1,6 @@
 {
   "name": "@raghu1211/test-project",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A test project",
   "scripts": {
     "start": "node app.js",
