@@ -128,51 +128,57 @@ jobs:
           path: $TEST_RESULTS  # Correcting path to point to the test results file
 
   publish:
-    name: Publish Job
-    runs-on: ubuntu-latest
-    needs: test
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+   name: Publish Job
+   runs-on: ubuntu-latest
+   needs: test
+   permissions:
+    contents: write
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
 
-      - name: Authenticate to GitHub Packages
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GHCR_PAT }}" > ~/.npmrc
-        env:
-          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+    - name: Authenticate to GitHub Packages
+      run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GHCR_PAT }}" > ~/.npmrc
+      env:
+        GHCR_PAT: ${{ secrets.GHCR_PAT }}
 
-      - name: Pull latest changes
-        run: git pull origin master
+    - name: Pull latest changes
+      run: git pull origin master
 
-      - name: Configure Git
-        run: |
-          git config --global user.email "raghavenderraoch89@gmail.com"
-          git config --global user.name "raghu1211"
+    - name: Configure Git
+      run: |
+        git config --global user.email "raghavenderraoch89@gmail.com"
+        git config --global user.name "raghu1211"
 
-      - name: Stash uncommitted changes
-        run: git stash || echo "No changes to stash"
+    - name: Stash uncommitted changes
+      run: git stash || echo "No changes to stash"
 
-      - name: Pull latest changes
-        run: git pull origin master
+    - name: Pull latest changes
+      run: git pull origin master
 
-      - name: Check for changes before pushing
-        run: |
-          git diff-index --quiet HEAD || (git add package.json package-lock.json && git commit -m "Bump package version to ${{ env.NEW_VERSION }}" || echo "No changes to commit")
+    - name: Check for changes before pushing
+      run: |
+        git diff-index --quiet HEAD || (git add package.json package-lock.json && git commit -m "Bump package version to ${{ env.NEW_VERSION }}" || echo "No changes to commit")
 
-      - name: Push changes
-        run: |
-          git push origin master
+    - name: Push changes
+      run: |
+        git push origin master
 
-      - name: Publish package to GitHub Packages
-        run: |
-          cd /home/runner/work/test/test
+    - name: Publish package to GitHub Packages
+      run: |
+        cd /home/runner/work/test/test
+        if [ -n "${{ env.NEW_VERSION }}" ]; then
           npm publish --access public --tag "${{ env.NEW_VERSION }}" || (echo "Publishing failed; attempting to overwrite." && npm publish --access public --tag "${{ env.NEW_VERSION }}" --force)
+        else
+          echo "Error: NEW_VERSION is not set. Cannot publish."
+          exit 1
+        fi
+
 
   deploy:
     name: Deploy Job
