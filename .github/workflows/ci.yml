@@ -135,25 +135,32 @@ jobs:
         env:
           GHCR_PAT: ${{ secrets.GHCR_PAT }}
 
+      - name: Bump package version
+        run: |
+          cd /home/runner/work/test/test
+          npm version patch
+          git push origin HEAD
+
       - name: Publish package to GitHub Packages
         run: |
           cd /home/runner/work/test/test
-          npm publish
+          npm publish --access public
 
   deploy:
     name: Deploy Job
     runs-on: ubuntu-latest
     environment: dev
-    needs: test
+    needs: publish
     if: ${{ github.ref == 'refs/heads/master' }}  
     steps:
-      - name: Create a deployment directory
-        run: mkdir -p /home/runner/work/deployment/test-deploy
+    - name: Create a deployment directory
+      run: mkdir -p /home/runner/work/deployment/test-deploy
 
-      - name: Copy files to deployment directory
-        run: |
-          cp -r ./dist/* /home/runner/work/deployment/test-deploy/
-          echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
+    - name: Copy files to deployment directory
+      run: |
+        cd /home/runner/work/test/test
+        cp -r ./dist/* /home/runner/work/deployment/test-deploy/
+        echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
 
   # release:
   #   name: Release Job
