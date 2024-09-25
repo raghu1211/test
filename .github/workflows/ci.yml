@@ -173,9 +173,13 @@ jobs:
 
     - name: Copy files to deployment directory
       run: |
-        cd /home/runner/work/test/test
-        cp -r ./dist/* /home/runner/work/deployment/test-deploy/
-        echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
+        if [ -d "/home/runner/work/test/test" ]; then
+          cp -r /home/runner/work/test/test/* /home/runner/work/deployment/test-deploy/
+          echo "Deployment to /home/runner/work/deployment/test-deploy/ completed."
+        else
+          echo "Error: Build folder '/home/runner/work/test/test' not found."
+          exit 1
+        fi
 
   # release:
   #   name: Release Job
