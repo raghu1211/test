@@ -170,7 +170,7 @@ jobs:
       - name: Publish package to GitHub Packages
         run: |
           cd /home/runner/work/test/test
-          npm publish --access public --tag "v${{ env.NEW_VERSION }}" || (echo "Publishing failed; attempting to overwrite." && npm publish --access public --tag "v${{ env.NEW_VERSION }}" --force)
+          npm publish --access public --tag "${{ env.NEW_VERSION }}" || (echo "Publishing failed; attempting to overwrite." && npm publish --access public --tag "${{ env.NEW_VERSION }}" --force)
 
   deploy:
     name: Deploy Job
