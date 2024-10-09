@@ -1,0 +1,15 @@
+name: "Greet Workflow"
+
+on: [push]
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Greet the user
+        uses: ./github/actions/my-action
+        with:
+          who-to-greet: "Raghu"

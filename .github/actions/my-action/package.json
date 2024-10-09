@@ -1,0 +1,13 @@
+{
+    "name": "my-custom-action",
+    "version": "1.0.0",
+    "description": "A GitHub action that greets a user",
+    "main": "index.js",
+    "dependencies": {
+      "@actions/core": "^1.10.0"
+    },
+    "scripts": {
+      "build": "ncc build index.js -o dist"
+    }
+  }
+  

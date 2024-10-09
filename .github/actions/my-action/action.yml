@@ -1,0 +1,10 @@
+name: "My Custom JavaScript Action"
+description: "A custom JavaScript action to greet someone"
+inputs:
+  who-to-greet:
+    description: "The name of the person to greet"
+    required: true
+    default: "World"
+runs:
+  using: "node12"
+  main: "dist/index.js"
